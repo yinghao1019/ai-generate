@@ -1,4 +1,4 @@
-package com.howhow.aigenerate;
+package com.howhow.ai_generate;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
