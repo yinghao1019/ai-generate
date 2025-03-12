@@ -6,22 +6,18 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.OffsetDateTime;
-import java.util.List;
 
 @Data
-@Document(collation = "vocab")
-public class VocabDocument {
+@Document(collation = "image")
+public class ImageDocument {
+
     @Id private String id;
 
-    private String title;
+    private String userId;
 
-    private String language;
+    private String prompt;
 
-    private List<String> wordList;
-
-    private List<String> zhWordList;
+    private String imageUrl;
 
     private OffsetDateTime createdTimestamp;
-
-    private String userId;
 }

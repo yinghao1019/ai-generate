@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 
 @Data
 @Document(collation = "user")
@@ -20,6 +21,8 @@ public class UserDocument {
 
     @Indexed(unique = true)
     private String providerId;
+
+    private List<String> roles;
 
     private OffsetDateTime createdTimestamp;
     private OffsetDateTime updatedTimestamp;
