@@ -1,6 +1,5 @@
 package com.howhow.ai_generate.client;
 
-import com.google.gson.Gson;
 import com.howhow.ai_generate.model.dto.TextGenerationDTO;
 import com.howhow.ai_generate.model.open_ai.Message;
 import com.howhow.ai_generate.model.open_ai.OpenAIResponse;
@@ -18,14 +17,13 @@ import java.util.List;
 
 @Component
 @Slf4j
-public class OpenAIClient {
+public class OpenAiClient {
     private final WebClient webClient;
-    private final Gson gson = new Gson();
 
     @Value("${openai.key}")
     private String openAiKey;
 
-    public OpenAIClient(WebClient.Builder webClientBuilder) {
+    public OpenAiClient(WebClient.Builder webClientBuilder) {
         this.webClient =
                 webClientBuilder
                         .baseUrl("https://api.openai.com/v1")
@@ -34,7 +32,7 @@ public class OpenAIClient {
                         .build();
     }
 
-    // TODO deserializing response to object
+    // TODO deserializing response to object、error handling
     public Message generateText(String prompt, String userInput) {
         List<TextGenerationDTO.TextContentDTO> messages = new ArrayList<>();
         TextGenerationDTO.TextContentDTO systemContentDTO = new TextGenerationDTO.TextContentDTO();
