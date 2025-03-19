@@ -15,7 +15,7 @@ public class VocabDocument {
 
     private String title;
 
-    private String language;
+    private String languageId;
 
     private List<String> wordList;
 
