@@ -7,5 +7,5 @@ import lombok.Data;
 @Data
 public class GenVocabRequestDTO {
     @NotNull private String userInput;
-    @NotNull private String language;
+    @NotNull private String languageId;
 }

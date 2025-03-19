@@ -3,8 +3,10 @@ package com.howhow.ai_generate.service;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.howhow.ai_generate.client.OpenAiClient;
+import com.howhow.ai_generate.dao.LanguageRepository;
 import com.howhow.ai_generate.dao.VocabRepository;
 import com.howhow.ai_generate.exception.BadRequestException;
+import com.howhow.ai_generate.model.document.LanguageDocument;
 import com.howhow.ai_generate.model.document.VocabDocument;
 import com.howhow.ai_generate.model.dto.GenVocabRequestDTO;
 import com.howhow.ai_generate.model.dto.GenVocabResponseDTO;
@@ -22,18 +24,20 @@ import java.util.List;
 @RequiredArgsConstructor
 public class VocabService {
     private final VocabRepository vocabRepository;
+    private final LanguageRepository languageRepository;
 
     private final OpenAiClient openAIClient;
 
     private final JsonParser jsonParser = new JsonParser();
 
-    public GenVocabResponseDTO generateVocab(GenVocabRequestDTO requestDTO) {
-        if (vocabRepository.existsById(requestDTO.getLanguage())) {
-            throw new BadRequestException("Vocab already exists");
-        }
+    public GenVocabResponseDTO generateVocab(GenVocabRequestDTO requestDTO)
+            throws BadRequestException {
+        LanguageDocument language =
+                languageRepository
+                        .findById(requestDTO.getLanguageId())
+                        .orElseThrow(() -> new BadRequestException("Language not found"));
 
         OffsetDateTime now = OffsetDateTime.now();
-        // TODO 檢查語言
         Message message =
                 openAIClient.generateText(
                         """
@@ -50,21 +54,21 @@ public class VocabService {
         JsonObject data = jsonParser.parse(message.getContent()).getAsJsonObject();
         List<String> wordList = JsonUtils.getStringList(data, "wordList");
         List<String> zhWordList = JsonUtils.getStringList(data, "zhWordList");
-        // 存入資料庫
+        // save to db
         VocabDocument vocabDocument = new VocabDocument();
         vocabDocument.setTitle(requestDTO.getUserInput());
-        vocabDocument.setLanguageId(requestDTO.getLanguage());
+        vocabDocument.setLanguageId(requestDTO.getLanguageId());
         vocabDocument.setWordList(wordList);
         vocabDocument.setZhWordList(zhWordList);
         vocabDocument.setCreatedTimestamp(now);
-
         vocabRepository.save(vocabDocument);
 
+        // create response
         GenVocabResponseDTO responseDTO = new GenVocabResponseDTO();
         responseDTO.setTitle(requestDTO.getUserInput());
         responseDTO.setWordList(wordList);
         responseDTO.setZhWordList(zhWordList);
-        responseDTO.setLanguage(requestDTO.getLanguage());
+        responseDTO.setLanguage(language.getLanguageName());
         responseDTO.setCreatedAt(now.toEpochSecond());
         return responseDTO;
     }

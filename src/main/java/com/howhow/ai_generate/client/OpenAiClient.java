@@ -1,8 +1,12 @@
 package com.howhow.ai_generate.client;
 
+import com.howhow.ai_generate.exception.ChatCompletionException;
 import com.howhow.ai_generate.model.dto.TextGenerationDTO;
+import com.howhow.ai_generate.model.open_ai.ChatCompletionResponse;
+import com.howhow.ai_generate.model.open_ai.Choice;
 import com.howhow.ai_generate.model.open_ai.Message;
-import com.howhow.ai_generate.model.open_ai.OpenAIResponse;
+
+import io.micrometer.common.util.StringUtils;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -10,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.ArrayList;
@@ -32,8 +37,8 @@ public class OpenAiClient {
                         .build();
     }
 
-    // TODO deserializing response to object、error handling
-    public Message generateText(String prompt, String userInput) {
+    // TODO deserializing response to object
+    public Message generateText(String prompt, String userInput) throws ChatCompletionException,RestClientException {
         List<TextGenerationDTO.TextContentDTO> messages = new ArrayList<>();
         TextGenerationDTO.TextContentDTO systemContentDTO = new TextGenerationDTO.TextContentDTO();
         systemContentDTO.setContent(prompt);
@@ -49,19 +54,45 @@ public class OpenAiClient {
         textGenerationDTO.setModel("gpt-4o-mini");
         textGenerationDTO.setMessages(messages);
 
-        OpenAIResponse openAIResponse =
+        ChatCompletionResponse chatCompletionResponse =
                 webClient
                         .post()
                         .uri("/chat/completions")
                         .bodyValue(messages)
                         .retrieve()
-                        .bodyToMono(OpenAIResponse.class)
+                        .bodyToMono(ChatCompletionResponse.class)
                         .doOnError(
                                 error -> {
-                                    log.error("Error in generating text", error);
+                                    throw new RestClientException(error.getMessage(),error);
                                 })
                         .block();
+        if (chatCompletionResponse.getChoices().isEmpty()) {
+            throw new ChatCompletionException("openai gen error.choices is empty");
+        }
 
-        return openAIResponse.getChoices().get(0).getMessage();
+        Choice choice = chatCompletionResponse.getChoices().get(0);
+        edgeCaseException(choice);
+        return choice.getMessage();
+    }
+
+    private void edgeCaseException(Choice choice) throws ChatCompletionException {
+        if ("length".equals(choice.getFinishReason())) {
+            throw new ChatCompletionException(
+                    String.format("openai gen error.reason is :%s", choice.getFinishReason()));
+        }
+
+        if ("content_filter".equals(choice.getFinishReason())) {
+            throw new ChatCompletionException(
+                    String.format("openai gen error.reason is :%s", choice.getFinishReason()));
+        }
+        if ("stop".equals(choice.getFinishReason())) {
+            throw new ChatCompletionException(
+                    String.format("openai gen error.reason is :%s", choice.getFinishReason()));
+        }
+
+        if (StringUtils.isNotEmpty(choice.getMessage().getRefusal())) {
+            throw new ChatCompletionException(
+                    String.format("openai gen error.refusal:%s", choice.getMessage().getRefusal()));
+        }
     }
 }
