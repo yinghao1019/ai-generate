@@ -10,7 +10,7 @@ import java.time.OffsetDateTime;
 import java.util.List;
 
 @Data
-@Document(collation = "user")
+@Document(collection = "user")
 public class UserDocument {
     @Id private String id;
     private String name;
