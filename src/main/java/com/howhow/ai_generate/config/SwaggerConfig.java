@@ -28,6 +28,7 @@ public class SwaggerConfig {
                         .schema(new io.swagger.v3.oas.models.media.StringSchema());
 
         return new OpenAPI()
+
                 .info(apiInfo())
                 .components(
                         new Components()
@@ -39,7 +40,7 @@ public class SwaggerConfig {
     public GroupedOpenApi publicApi() {
         return GroupedOpenApi.builder()
                 .group("public") // 分組名稱
-                .packagesToScan("com.howhow.ithome_ap.controller") // 掃描的包
+                .packagesToScan("com.howhow.ai_generate.controller") // 掃描的包
                 .pathsToMatch("/**") // 匹配所有路徑
                 .pathsToExclude("/error/**") // 排除錯誤路徑
                 .build();
@@ -47,9 +48,8 @@ public class SwaggerConfig {
 
     private Info apiInfo() {
         return new Info()
-                .title("IT Home Tech Article Management System")
-                .description("This is IT Home system backend API")
-                .version("1.0")
+                .title("Open AI Web Application")
+                .description("This is Open Ai practice")
                 .contact(new Contact().name("Howard Hung").email("z112517z@gmail.com"));
     }
 }

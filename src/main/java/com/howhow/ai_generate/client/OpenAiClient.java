@@ -37,7 +37,6 @@ public class OpenAiClient {
                         .build();
     }
 
-    // TODO deserializing response to object
     public Message generateText(String prompt, String userInput) throws ChatCompletionException,RestClientException {
         List<TextGenerationDTO.TextContentDTO> messages = new ArrayList<>();
         TextGenerationDTO.TextContentDTO systemContentDTO = new TextGenerationDTO.TextContentDTO();
