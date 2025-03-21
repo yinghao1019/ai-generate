@@ -11,15 +11,20 @@ import com.howhow.ai_generate.model.document.LanguageDocument;
 import com.howhow.ai_generate.model.document.VocabDocument;
 import com.howhow.ai_generate.model.dto.GenVocabRequestDTO;
 import com.howhow.ai_generate.model.dto.GenVocabResponseDTO;
+import com.howhow.ai_generate.model.open_ai.JsonArrayProperty;
+import com.howhow.ai_generate.model.open_ai.JsonResponseFormat;
+import com.howhow.ai_generate.model.open_ai.JsonStringObject;
 import com.howhow.ai_generate.utils.JsonUtils;
+import com.openai.models.ResponseFormatJsonSchema;
 
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -51,9 +56,10 @@ public class VocabService {
                                     }
             """;
 
-        Optional<String> completionContent =
-                openAIManager.generateText(message, requestDTO.getUserInput());
-        JsonNode data = objectMapper.readTree(completionContent.get());
+        String completionContent =
+                openAIManager.generateText(
+                        message, requestDTO.getUserInput(), createGenVocabFormat());
+        JsonNode data = objectMapper.readTree(completionContent);
         List<String> wordList = JsonUtils.getStringList(data, "wordList");
         List<String> zhWordList = JsonUtils.getStringList(data, "zhWordList");
         // save to db
@@ -73,5 +79,13 @@ public class VocabService {
         responseDTO.setLanguage(language.getLanguageName());
         responseDTO.setCreatedAt(now.toEpochSecond());
         return responseDTO;
+    }
+
+    private ResponseFormatJsonSchema createGenVocabFormat() {
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("wordList", new JsonArrayProperty(new JsonStringObject()));
+        properties.put("zhWordList", new JsonArrayProperty(new JsonStringObject()));
+        return new JsonResponseFormat("object", List.of("wordList", "zhWordList"), properties)
+                .toResponseFormat();
     }
 }

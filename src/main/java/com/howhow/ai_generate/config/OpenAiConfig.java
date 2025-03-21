@@ -16,6 +16,9 @@ public class OpenAiConfig {
 
     @Bean
     public OpenAIOkHttpClient.Builder aiClientBuilder() {
-        return OpenAIOkHttpClient.builder().apiKey(openAiKey);
+        return OpenAIOkHttpClient.builder()
+                .maxRetries(2)
+                .responseValidation(true)
+                .apiKey(openAiKey);
     }
 }
