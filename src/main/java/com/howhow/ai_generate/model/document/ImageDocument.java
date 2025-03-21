@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.OffsetDateTime;
 
 @Data
-@Document(collation = "image")
+@Document(collection = "image")
 public class ImageDocument {
 
     @Id private String id;

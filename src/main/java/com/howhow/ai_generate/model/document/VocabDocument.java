@@ -9,7 +9,7 @@ import java.time.OffsetDateTime;
 import java.util.List;
 
 @Data
-@Document(collation = "vocab")
+@Document(collection = "vocab")
 public class VocabDocument {
     @Id private String id;
 
