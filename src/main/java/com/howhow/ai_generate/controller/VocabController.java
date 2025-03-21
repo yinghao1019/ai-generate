@@ -1,5 +1,6 @@
 package com.howhow.ai_generate.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.howhow.ai_generate.model.dto.GenVocabRequestDTO;
 import com.howhow.ai_generate.model.dto.GenVocabResponseDTO;
 import com.howhow.ai_generate.service.VocabService;
@@ -23,8 +24,8 @@ public class VocabController {
 
     // TODO 驗證身分權限
     @PostMapping("/generate")
-    public GenVocabResponseDTO generateVocab(
-            @RequestBody @Validated GenVocabRequestDTO requestDTO) {
+    public GenVocabResponseDTO generateVocab(@RequestBody @Validated GenVocabRequestDTO requestDTO)
+            throws JsonProcessingException {
         return vocabService.generateVocab(requestDTO);
     }
 }

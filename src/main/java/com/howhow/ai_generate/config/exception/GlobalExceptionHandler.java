@@ -27,7 +27,7 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.AccessDeniedException;
 
-@RestControllerAdvice
+@RestControllerAdvice(basePackages = "com.howhow.ai_generate.controller")
 @Slf4j
 public class GlobalExceptionHandler {
     /**
