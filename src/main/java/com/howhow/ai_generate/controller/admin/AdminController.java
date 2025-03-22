@@ -1,4 +1,4 @@
-package com.howhow.ai_generate.controller;
+package com.howhow.ai_generate.controller.admin;
 
 import com.howhow.ai_generate.model.dto.LanguageDTO;
 import com.howhow.ai_generate.model.dto.LanguageRequestDTO;
