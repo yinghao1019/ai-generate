@@ -36,8 +36,10 @@ public class VocabService {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    //    TODO 查詢vocab
     public GenVocabResponseDTO generateVocab(GenVocabRequestDTO requestDTO)
             throws BadRequestException, JsonProcessingException {
+        // TODO 驗證身分，每個人只會存5個vocab主題
         LanguageDocument language =
                 languageRepository
                         .findById(requestDTO.getLanguageId())
